@@ -1,0 +1,511 @@
+{
+  "environment": {
+    "os": "Windows-11-10.0.26300-SP0",
+    "python_version": "3.14.0",
+    "cpu_count": 8,
+    "server": "Separate-process Werkzeug threaded WSGI server (127.0.0.1 ephemeral port, no shared client GIL)",
+    "database": "SQLite 3 (temporary isolated file, default DELETE journal mode, unindexed tasks.user_id)",
+    "seeded_users": 10,
+    "tasks_per_user": 150,
+    "seeded_tasks_total": 1500,
+    "warmup_requests_per_endpoint": 10,
+    "think_time_ms": 0,
+    "concurrency_levels": [
+      1,
+      10,
+      25,
+      50
+    ],
+    "executed_at": "2026-11-26T23:48:06.712845+08:00"
+  },
+  "results": [
+    {
+      "endpoint": "GET /api/tasks",
+      "concurrency": 1,
+      "total_requests": 50,
+      "success_count": 50,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 0.807,
+      "throughput_rps": 61.93,
+      "min_ms": 9.2,
+      "mean_ms": 16.06,
+      "p50_ms": 15.57,
+      "p95_ms": 31.67,
+      "max_ms": 33.48,
+      "status_counts": {
+        "200": 50
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "GET /api/tasks",
+      "concurrency": 10,
+      "total_requests": 150,
+      "success_count": 150,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 1.104,
+      "throughput_rps": 135.87,
+      "min_ms": 35.55,
+      "mean_ms": 71.2,
+      "p50_ms": 71.74,
+      "p95_ms": 87.02,
+      "max_ms": 104.3,
+      "status_counts": {
+        "200": 150
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "GET /api/tasks",
+      "concurrency": 25,
+      "total_requests": 250,
+      "success_count": 250,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 1.964,
+      "throughput_rps": 127.31,
+      "min_ms": 20.61,
+      "mean_ms": 184.75,
+      "p50_ms": 182.3,
+      "p95_ms": 265.0,
+      "max_ms": 293.94,
+      "status_counts": {
+        "200": 250
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "GET /api/tasks",
+      "concurrency": 50,
+      "total_requests": 400,
+      "success_count": 400,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 3.061,
+      "throughput_rps": 130.66,
+      "min_ms": 42.35,
+      "mean_ms": 354.16,
+      "p50_ms": 364.02,
+      "p95_ms": 458.78,
+      "max_ms": 509.56,
+      "status_counts": {
+        "200": 400
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "GET /api/dashboard",
+      "concurrency": 1,
+      "total_requests": 50,
+      "success_count": 50,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 1.056,
+      "throughput_rps": 47.34,
+      "min_ms": 10.27,
+      "mean_ms": 21.1,
+      "p50_ms": 21.0,
+      "p95_ms": 35.03,
+      "max_ms": 36.18,
+      "status_counts": {
+        "200": 50
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "GET /api/dashboard",
+      "concurrency": 10,
+      "total_requests": 150,
+      "success_count": 150,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 1.641,
+      "throughput_rps": 91.41,
+      "min_ms": 21.98,
+      "mean_ms": 105.79,
+      "p50_ms": 105.77,
+      "p95_ms": 135.85,
+      "max_ms": 173.21,
+      "status_counts": {
+        "200": 150
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "GET /api/dashboard",
+      "concurrency": 25,
+      "total_requests": 250,
+      "success_count": 250,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 2.823,
+      "throughput_rps": 88.56,
+      "min_ms": 23.13,
+      "mean_ms": 265.22,
+      "p50_ms": 262.7,
+      "p95_ms": 373.84,
+      "max_ms": 441.71,
+      "status_counts": {
+        "200": 250
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "GET /api/dashboard",
+      "concurrency": 50,
+      "total_requests": 400,
+      "success_count": 400,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 4.868,
+      "throughput_rps": 82.17,
+      "min_ms": 21.8,
+      "mean_ms": 565.52,
+      "p50_ms": 567.13,
+      "p95_ms": 777.88,
+      "max_ms": 876.4,
+      "status_counts": {
+        "200": 400
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "GET / (Web UI)",
+      "concurrency": 1,
+      "total_requests": 30,
+      "success_count": 30,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 1.731,
+      "throughput_rps": 17.33,
+      "min_ms": 39.95,
+      "mean_ms": 57.68,
+      "p50_ms": 61.27,
+      "p95_ms": 67.25,
+      "max_ms": 68.78,
+      "status_counts": {
+        "200": 30
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "GET / (Web UI)",
+      "concurrency": 10,
+      "total_requests": 100,
+      "success_count": 100,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 3.16,
+      "throughput_rps": 31.64,
+      "min_ms": 135.83,
+      "mean_ms": 306.88,
+      "p50_ms": 316.34,
+      "p95_ms": 342.83,
+      "max_ms": 367.63,
+      "status_counts": {
+        "200": 100
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "GET / (Web UI)",
+      "concurrency": 25,
+      "total_requests": 175,
+      "success_count": 175,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 5.903,
+      "throughput_rps": 29.64,
+      "min_ms": 169.97,
+      "mean_ms": 804.77,
+      "p50_ms": 834.02,
+      "p95_ms": 951.74,
+      "max_ms": 983.74,
+      "status_counts": {
+        "200": 175
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "GET / (Web UI)",
+      "concurrency": 50,
+      "total_requests": 250,
+      "success_count": 250,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 9.031,
+      "throughput_rps": 27.68,
+      "min_ms": 384.85,
+      "mean_ms": 1690.86,
+      "p50_ms": 1736.11,
+      "p95_ms": 1986.07,
+      "max_ms": 2293.79,
+      "status_counts": {
+        "200": 250
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "POST /api/tasks",
+      "concurrency": 1,
+      "total_requests": 40,
+      "success_count": 40,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 0.877,
+      "throughput_rps": 45.62,
+      "min_ms": 13.86,
+      "mean_ms": 21.89,
+      "p50_ms": 15.7,
+      "p95_ms": 34.2,
+      "max_ms": 34.79,
+      "status_counts": {
+        "201": 40
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "POST /api/tasks",
+      "concurrency": 10,
+      "total_requests": 120,
+      "success_count": 120,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 1.756,
+      "throughput_rps": 68.32,
+      "min_ms": 12.91,
+      "mean_ms": 96.02,
+      "p50_ms": 32.2,
+      "p95_ms": 335.55,
+      "max_ms": 1406.93,
+      "status_counts": {
+        "201": 120
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "POST /api/tasks",
+      "concurrency": 25,
+      "total_requests": 200,
+      "success_count": 200,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 3.468,
+      "throughput_rps": 57.68,
+      "min_ms": 12.34,
+      "mean_ms": 250.94,
+      "p50_ms": 44.34,
+      "p95_ms": 1548.46,
+      "max_ms": 3256.33,
+      "status_counts": {
+        "201": 200
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "POST /api/tasks",
+      "concurrency": 50,
+      "total_requests": 300,
+      "success_count": 300,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 5.209,
+      "throughput_rps": 57.6,
+      "min_ms": 11.99,
+      "mean_ms": 490.18,
+      "p50_ms": 45.77,
+      "p95_ms": 3289.3,
+      "max_ms": 4999.96,
+      "status_counts": {
+        "201": 300
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "Mixed (70R/20D/10W)",
+      "concurrency": 25,
+      "total_requests": 250,
+      "success_count": 250,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 3.096,
+      "throughput_rps": 80.74,
+      "min_ms": 27.41,
+      "mean_ms": 242.38,
+      "p50_ms": 199.93,
+      "p95_ms": 477.99,
+      "max_ms": 1069.56,
+      "status_counts": {
+        "200": 225,
+        "201": 25
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "Mixed (70R/20D/10W)",
+      "concurrency": 50,
+      "total_requests": 400,
+      "success_count": 400,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 4.431,
+      "throughput_rps": 90.27,
+      "min_ms": 13.59,
+      "mean_ms": 399.71,
+      "p50_ms": 355.79,
+      "p95_ms": 809.54,
+      "max_ms": 1299.67,
+      "status_counts": {
+        "200": 360,
+        "201": 40
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "POST /api/login",
+      "concurrency": 1,
+      "total_requests": 20,
+      "success_count": 20,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 3.869,
+      "throughput_rps": 5.17,
+      "min_ms": 171.42,
+      "mean_ms": 193.39,
+      "p50_ms": 190.56,
+      "p95_ms": 210.33,
+      "max_ms": 218.43,
+      "status_counts": {
+        "200": 20
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    },
+    {
+      "endpoint": "POST /api/login",
+      "concurrency": 10,
+      "total_requests": 60,
+      "success_count": 60,
+      "error_count": 0,
+      "error_rate_pct": 0.0,
+      "wall_time_s": 2.86,
+      "throughput_rps": 20.98,
+      "min_ms": 331.35,
+      "mean_ms": 446.44,
+      "p50_ms": 433.7,
+      "p95_ms": 534.69,
+      "max_ms": 569.04,
+      "status_counts": {
+        "200": 60
+      },
+      "error_breakdown": {},
+      "error_samples": []
+    }
+  ],
+  "sla_test_cases": [
+    {
+      "test_case_id": "TC-PERF-001",
+      "feature": "Paginated Task Search API (GET /api/tasks?page=0&per_page=20)",
+      "technique": "Stepped-Load Performance Test (0ms think time)",
+      "objective": "Verify paginated JSON reads remain <=500ms p95 at 25 users, <=1000ms p95 at 50 users, with 0% errors.",
+      "preconditions": "Multi-tenant DB seeded (10 users x 150 tasks = 1500 rows); 10 warmup requests executed.",
+      "test_data": "Stages=[1, 10, 25, 50], Requests=[50, 150, 250, 400]",
+      "steps": "1. Start isolated PyTodo Pro subprocess.\n2. Warm up GET /api/tasks.\n3. Execute stepped concurrency load ([1, 10, 25, 50] VUs).",
+      "expected_result": "Verify paginated JSON reads remain <=500ms p95 at 25 users, <=1000ms p95 at 50 users, with 0% errors.",
+      "actual_result": "1u: mean=16.06ms, p50=15.57ms, p95=31.67ms, rps=61.93, err=0.0% | 10u: mean=71.2ms, p50=71.74ms, p95=87.02ms, rps=135.87, err=0.0% | 25u: mean=184.75ms, p50=182.3ms, p95=265.0ms, rps=127.31, err=0.0% | 50u: mean=354.16ms, p50=364.02ms, p95=458.78ms, rps=130.66, err=0.0%",
+      "status": "Pass",
+      "evidence": "evidence/performance_results.csv & evidence/performance_results.json [GET /api/tasks]",
+      "defect_id": "None"
+    },
+    {
+      "test_case_id": "TC-PERF-002",
+      "feature": "Dashboard Aggregation API (GET /api/dashboard)",
+      "technique": "Stepped-Load Performance Test (0ms think time)",
+      "objective": "Verify full-user urgency aggregation remains <=500ms p95 at 25 users, <=1000ms p95 at 50 users, with 0% errors.",
+      "preconditions": "Multi-tenant DB seeded (10 users x 150 tasks = 1500 rows); 10 warmup requests executed.",
+      "test_data": "Stages=[1, 10, 25, 50], Requests=[50, 150, 250, 400]",
+      "steps": "1. Start isolated PyTodo Pro subprocess.\n2. Warm up GET /api/dashboard.\n3. Execute stepped concurrency load ([1, 10, 25, 50] VUs).",
+      "expected_result": "Verify full-user urgency aggregation remains <=500ms p95 at 25 users, <=1000ms p95 at 50 users, with 0% errors.",
+      "actual_result": "1u: mean=21.1ms, p50=21.0ms, p95=35.03ms, rps=47.34, err=0.0% | 10u: mean=105.79ms, p50=105.77ms, p95=135.85ms, rps=91.41, err=0.0% | 25u: mean=265.22ms, p50=262.7ms, p95=373.84ms, rps=88.56, err=0.0% | 50u: mean=565.52ms, p50=567.13ms, p95=777.88ms, rps=82.17, err=0.0%",
+      "status": "Pass",
+      "evidence": "evidence/performance_results.csv & evidence/performance_results.json [GET /api/dashboard]",
+      "defect_id": "None"
+    },
+    {
+      "test_case_id": "TC-PERF-003",
+      "feature": "Web UI Full Task List Render (GET /)",
+      "technique": "Stepped-Load Performance Test (0ms think time)",
+      "objective": "Verify Web UI task table render remains <=1000ms p95 up to 50 concurrent users with 0% errors.",
+      "preconditions": "Multi-tenant DB seeded (10 users x 150 tasks = 1500 rows); 10 warmup requests executed.",
+      "test_data": "Stages=[1, 10, 25, 50], Requests=[30, 100, 175, 250]",
+      "steps": "1. Start isolated PyTodo Pro subprocess.\n2. Warm up GET / (Web UI).\n3. Execute stepped concurrency load ([1, 10, 25, 50] VUs).",
+      "expected_result": "Verify Web UI task table render remains <=1000ms p95 up to 50 concurrent users with 0% errors.",
+      "actual_result": "1u: mean=57.68ms, p50=61.27ms, p95=67.25ms, rps=17.33, err=0.0% | 10u: mean=306.88ms, p50=316.34ms, p95=342.83ms, rps=31.64, err=0.0% | 25u: mean=804.77ms, p50=834.02ms, p95=951.74ms, rps=29.64, err=0.0% | 50u: mean=1690.86ms, p50=1736.11ms, p95=1986.07ms, rps=27.68, err=0.0%",
+      "status": "Fail",
+      "evidence": "evidence/performance_results.csv & evidence/performance_results.json [GET / (Web UI)]",
+      "defect_id": "DEF-SP-014"
+    },
+    {
+      "test_case_id": "TC-PERF-004",
+      "feature": "Authenticated Task Creation API (POST /api/tasks)",
+      "technique": "Stepped-Load Performance Test (0ms think time)",
+      "objective": "Verify concurrent task inserts remain <=1000ms p95 up to 50 users with 0% HTTP 5xx lock errors.",
+      "preconditions": "Multi-tenant DB seeded (10 users x 150 tasks = 1500 rows); 10 warmup requests executed.",
+      "test_data": "Stages=[1, 10, 25, 50], Requests=[40, 120, 200, 300]",
+      "steps": "1. Start isolated PyTodo Pro subprocess.\n2. Warm up POST /api/tasks.\n3. Execute stepped concurrency load ([1, 10, 25, 50] VUs).",
+      "expected_result": "Verify concurrent task inserts remain <=1000ms p95 up to 50 users with 0% HTTP 5xx lock errors.",
+      "actual_result": "1u: mean=21.89ms, p50=15.7ms, p95=34.2ms, rps=45.62, err=0.0% | 10u: mean=96.02ms, p50=32.2ms, p95=335.55ms, rps=68.32, err=0.0% | 25u: mean=250.94ms, p50=44.34ms, p95=1548.46ms, rps=57.68, err=0.0% | 50u: mean=490.18ms, p50=45.77ms, p95=3289.3ms, rps=57.6, err=0.0%",
+      "status": "Fail",
+      "evidence": "evidence/performance_results.csv & evidence/performance_results.json [POST /api/tasks]",
+      "defect_id": "DEF-SP-015"
+    },
+    {
+      "test_case_id": "TC-PERF-005",
+      "feature": "Password Hashing Auth Endpoint (POST /api/login)",
+      "technique": "Stepped-Load Performance Test (0ms think time)",
+      "objective": "Verify Werkzeug scrypt password authentication stays <=1000ms p95 at 10 concurrent users with 0% errors.",
+      "preconditions": "Multi-tenant DB seeded (10 users x 150 tasks = 1500 rows); 10 warmup requests executed.",
+      "test_data": "Stages=[1, 10], Requests=[20, 60]",
+      "steps": "1. Start isolated PyTodo Pro subprocess.\n2. Warm up POST /api/login.\n3. Execute stepped concurrency load ([1, 10] VUs).",
+      "expected_result": "Verify Werkzeug scrypt password authentication stays <=1000ms p95 at 10 concurrent users with 0% errors.",
+      "actual_result": "1u: mean=193.39ms, p50=190.56ms, p95=210.33ms, rps=5.17, err=0.0% | 10u: mean=446.44ms, p50=433.7ms, p95=534.69ms, rps=20.98, err=0.0%",
+      "status": "Pass",
+      "evidence": "evidence/performance_results.csv & evidence/performance_results.json [POST /api/login]",
+      "defect_id": "None"
+    },
+    {
+      "test_case_id": "TC-PERF-006",
+      "feature": "Mixed Read/Dashboard/Write Contention (70% GET, 20% Dash, 10% POST)",
+      "technique": "Stepped-Load Performance Test (0ms think time)",
+      "objective": "Verify concurrent mixed reads and SQLite writes sustain <=1000ms p95 up to 50 users with 0% errors.",
+      "preconditions": "Multi-tenant DB seeded (10 users x 150 tasks = 1500 rows); 10 warmup requests executed.",
+      "test_data": "Stages=[25, 50], Requests=[250, 400]",
+      "steps": "1. Start isolated PyTodo Pro subprocess.\n2. Warm up Mixed (70R/20D/10W).\n3. Execute stepped concurrency load ([25, 50] VUs).",
+      "expected_result": "Verify concurrent mixed reads and SQLite writes sustain <=1000ms p95 up to 50 users with 0% errors.",
+      "actual_result": "25u: mean=242.38ms, p50=199.93ms, p95=477.99ms, rps=80.74, err=0.0% | 50u: mean=399.71ms, p50=355.79ms, p95=809.54ms, rps=90.27, err=0.0%",
+      "status": "Pass",
+      "evidence": "evidence/performance_results.csv & evidence/performance_results.json [Mixed (70R/20D/10W)]",
+      "defect_id": "None"
+    }
+  ]
+}

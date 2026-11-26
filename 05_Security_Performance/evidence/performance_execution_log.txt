@@ -1,0 +1,40 @@
+PyTodo Pro — Week 5 Controlled Performance Test Log
+Executed at: 2026-11-26T23:48:06.712845+08:00
+Environment: Windows-11-10.0.26300-SP0 | Python 3.14.0 | CPUs=8
+Server Mode: Separate-process Werkzeug threaded WSGI server (127.0.0.1 ephemeral port, no shared client GIL)
+Seeded DB: 10 users x 150 tasks = 1500 rows | Warmup=10 reqs | Think time=0 ms
+-------------------------------------------------------------------------------------------------------------------
+GET /api/tasks         | users= 1 | req= 50 | min=  9.20ms mean=  16.06ms p50=  15.57ms p95=  31.67ms max=  33.48ms | rps=  61.93 | err= 0.00% ({'200': 50})
+GET /api/tasks         | users=10 | req=150 | min= 35.55ms mean=  71.20ms p50=  71.74ms p95=  87.02ms max= 104.30ms | rps= 135.87 | err= 0.00% ({'200': 150})
+GET /api/tasks         | users=25 | req=250 | min= 20.61ms mean= 184.75ms p50= 182.30ms p95= 265.00ms max= 293.94ms | rps= 127.31 | err= 0.00% ({'200': 250})
+GET /api/tasks         | users=50 | req=400 | min= 42.35ms mean= 354.16ms p50= 364.02ms p95= 458.78ms max= 509.56ms | rps= 130.66 | err= 0.00% ({'200': 400})
+GET /api/dashboard     | users= 1 | req= 50 | min= 10.27ms mean=  21.10ms p50=  21.00ms p95=  35.03ms max=  36.18ms | rps=  47.34 | err= 0.00% ({'200': 50})
+GET /api/dashboard     | users=10 | req=150 | min= 21.98ms mean= 105.79ms p50= 105.77ms p95= 135.85ms max= 173.21ms | rps=  91.41 | err= 0.00% ({'200': 150})
+GET /api/dashboard     | users=25 | req=250 | min= 23.13ms mean= 265.22ms p50= 262.70ms p95= 373.84ms max= 441.71ms | rps=  88.56 | err= 0.00% ({'200': 250})
+GET /api/dashboard     | users=50 | req=400 | min= 21.80ms mean= 565.52ms p50= 567.13ms p95= 777.88ms max= 876.40ms | rps=  82.17 | err= 0.00% ({'200': 400})
+GET / (Web UI)         | users= 1 | req= 30 | min= 39.95ms mean=  57.68ms p50=  61.27ms p95=  67.25ms max=  68.78ms | rps=  17.33 | err= 0.00% ({'200': 30})
+GET / (Web UI)         | users=10 | req=100 | min=135.83ms mean= 306.88ms p50= 316.34ms p95= 342.83ms max= 367.63ms | rps=  31.64 | err= 0.00% ({'200': 100})
+GET / (Web UI)         | users=25 | req=175 | min=169.97ms mean= 804.77ms p50= 834.02ms p95= 951.74ms max= 983.74ms | rps=  29.64 | err= 0.00% ({'200': 175})
+GET / (Web UI)         | users=50 | req=250 | min=384.85ms mean=1690.86ms p50=1736.11ms p95=1986.07ms max=2293.79ms | rps=  27.68 | err= 0.00% ({'200': 250})
+POST /api/tasks        | users= 1 | req= 40 | min= 13.86ms mean=  21.89ms p50=  15.70ms p95=  34.20ms max=  34.79ms | rps=  45.62 | err= 0.00% ({'201': 40})
+POST /api/tasks        | users=10 | req=120 | min= 12.91ms mean=  96.02ms p50=  32.20ms p95= 335.55ms max=1406.93ms | rps=  68.32 | err= 0.00% ({'201': 120})
+POST /api/tasks        | users=25 | req=200 | min= 12.34ms mean= 250.94ms p50=  44.34ms p95=1548.46ms max=3256.33ms | rps=  57.68 | err= 0.00% ({'201': 200})
+POST /api/tasks        | users=50 | req=300 | min= 11.99ms mean= 490.18ms p50=  45.77ms p95=3289.30ms max=4999.96ms | rps=  57.60 | err= 0.00% ({'201': 300})
+Mixed (70R/20D/10W)    | users=25 | req=250 | min= 27.41ms mean= 242.38ms p50= 199.93ms p95= 477.99ms max=1069.56ms | rps=  80.74 | err= 0.00% ({'200': 225, '201': 25})
+Mixed (70R/20D/10W)    | users=50 | req=400 | min= 13.59ms mean= 399.71ms p50= 355.79ms p95= 809.54ms max=1299.67ms | rps=  90.27 | err= 0.00% ({'200': 360, '201': 40})
+POST /api/login        | users= 1 | req= 20 | min=171.42ms mean= 193.39ms p50= 190.56ms p95= 210.33ms max= 218.43ms | rps=   5.17 | err= 0.00% ({'200': 20})
+POST /api/login        | users=10 | req= 60 | min=331.35ms mean= 446.44ms p50= 433.70ms p95= 534.69ms max= 569.04ms | rps=  20.98 | err= 0.00% ({'200': 60})
+-------------------------------------------------------------------------------------------------------------------
+SLA TEST CASE EVALUATIONS (TC-PERF-001 .. TC-PERF-006):
+[PASS] TC-PERF-001 | Paginated Task Search API (GET /api/tasks?page=0&per_page=20) | Defect: None
+       Actual: 1u: mean=16.06ms, p50=15.57ms, p95=31.67ms, rps=61.93, err=0.0% | 10u: mean=71.2ms, p50=71.74ms, p95=87.02ms, rps=135.87, err=0.0% | 25u: mean=184.75ms, p50=182.3ms, p95=265.0ms, rps=127.31, err=0.0% | 50u: mean=354.16ms, p50=364.02ms, p95=458.78ms, rps=130.66, err=0.0%
+[PASS] TC-PERF-002 | Dashboard Aggregation API (GET /api/dashboard) | Defect: None
+       Actual: 1u: mean=21.1ms, p50=21.0ms, p95=35.03ms, rps=47.34, err=0.0% | 10u: mean=105.79ms, p50=105.77ms, p95=135.85ms, rps=91.41, err=0.0% | 25u: mean=265.22ms, p50=262.7ms, p95=373.84ms, rps=88.56, err=0.0% | 50u: mean=565.52ms, p50=567.13ms, p95=777.88ms, rps=82.17, err=0.0%
+[FAIL] TC-PERF-003 | Web UI Full Task List Render (GET /) | Defect: DEF-SP-014
+       Actual: 1u: mean=57.68ms, p50=61.27ms, p95=67.25ms, rps=17.33, err=0.0% | 10u: mean=306.88ms, p50=316.34ms, p95=342.83ms, rps=31.64, err=0.0% | 25u: mean=804.77ms, p50=834.02ms, p95=951.74ms, rps=29.64, err=0.0% | 50u: mean=1690.86ms, p50=1736.11ms, p95=1986.07ms, rps=27.68, err=0.0%
+[FAIL] TC-PERF-004 | Authenticated Task Creation API (POST /api/tasks) | Defect: DEF-SP-015
+       Actual: 1u: mean=21.89ms, p50=15.7ms, p95=34.2ms, rps=45.62, err=0.0% | 10u: mean=96.02ms, p50=32.2ms, p95=335.55ms, rps=68.32, err=0.0% | 25u: mean=250.94ms, p50=44.34ms, p95=1548.46ms, rps=57.68, err=0.0% | 50u: mean=490.18ms, p50=45.77ms, p95=3289.3ms, rps=57.6, err=0.0%
+[PASS] TC-PERF-005 | Password Hashing Auth Endpoint (POST /api/login) | Defect: None
+       Actual: 1u: mean=193.39ms, p50=190.56ms, p95=210.33ms, rps=5.17, err=0.0% | 10u: mean=446.44ms, p50=433.7ms, p95=534.69ms, rps=20.98, err=0.0%
+[PASS] TC-PERF-006 | Mixed Read/Dashboard/Write Contention (70% GET, 20% Dash, 10% POST) | Defect: None
+       Actual: 25u: mean=242.38ms, p50=199.93ms, p95=477.99ms, rps=80.74, err=0.0% | 50u: mean=399.71ms, p50=355.79ms, p95=809.54ms, rps=90.27, err=0.0%

@@ -1,0 +1,82 @@
+PyTodo Pro — Week 5 Security Test Execution Log
+Executed at: 2026-11-26T23:47:53.977429+08:00
+Total: 26 | Passed: 5 | Failed: 21
+-----------------------------------------------------------------------------------------------
+[FAIL] TC-SEC-001 | Spoofing                           | Web UI Registration (/register) | Defect: DEF-SP-001
+       Actual:   First POST returned HTTP 302; second POST returned HTTP 302 (Location=/), creating a duplicate user row.
+       Evidence: evidence/security_execution_log.txt [TC-SEC-001]: HTTP 302 -> 302
+[FAIL] TC-SEC-002 | Spoofing                           | API Registration & Login Precedence (POST /api/register) | Defect: DEF-SP-001
+       Actual:   First call: HTTP 201 (id=3); second call: HTTP 201 (id=4); login with second password returned HTTP 401 (fetchone binds only first row).
+       Evidence: evidence/security_execution_log.txt [TC-SEC-002]: register 201/201, second-pw login=401
+[FAIL] TC-SEC-003 | Spoofing                           | Session Management / App Configuration | Defect: DEF-SP-002
+       Actual:   Cookie decoded as {'user_id': 5, 'username': 'victim_cookie'}; forged cookie authenticated to GET /api/dashboard with HTTP 200.
+       Evidence: evidence/security_execution_log.txt [TC-SEC-003]: forged /api/dashboard HTTP 200
+[FAIL] TC-SEC-004 | Spoofing                           | Authentication (POST /api/login & POST /login) | Defect: DEF-SP-003
+       Actual:   All 10 API attempts returned [401, 401, 401, 401, 401, 401, 401, 401, 401, 401] and all 10 Web attempts returned [200, 200, 200, 200, 200, 200, 200, 200, 200, 200] with no lockout or Retry-After.
+       Evidence: evidence/security_execution_log.txt [TC-SEC-004]: API=[401, 401, 401, 401, 401, 401, 401, 401, 401, 401], Web=[200, 200, 200, 200, 200, 200, 200, 200, 200, 200]
+[FAIL] TC-SEC-005 | Tampering                          | Task Search API (GET /api/tasks?q=) | Defect: DEF-SP-004
+       Actual:   Boolean probe HTTP 200 leaked 2 tasks including User B's task (['User B Confidential Task', 'User A Normal Task']); UNION probe HTTP 200 extracted users table row (username=victim_cookie, hash=scrypt:32768:8...<REDACTED>).
+       Evidence: evidence/security_execution_log.txt [TC-SEC-005]: bool=200 titles=['User B Confidential Task', 'User A Normal Task']; union=200 (username=victim_cookie, hash=scrypt:32768:8...<REDACTED>)
+[FAIL] TC-SEC-006 | Tampering                          | Web UI Task List (GET / - templates/index.html) | Defect: DEF-SP-005
+       Actual:   Raw unescaped payload '<script>/*stqa-xss-probe*/</script>' rendered verbatim inside GET / HTML due to '|safe' filter (Self-XSS unless chained with CSRF DEF-SP-006 or forged cookie DEF-SP-002).
+       Evidence: evidence/security_execution_log.txt [TC-SEC-006]: unescaped_script_in_dom=True
+[PASS] TC-SEC-007 | Tampering                          | Web UI Edit Form & Search Input (task_form.html, index.html q) | Defect: None
+       Actual:   Edit title & description escaped=True; reflected search query escaped=True.
+       Evidence: evidence/security_execution_log.txt [TC-SEC-007]: edit_escaped=True, reflected_escaped=True
+[FAIL] TC-SEC-008 | Tampering                          | Web UI State-Changing Forms (/tasks/new, /edit, /toggle, /delete) | Defect: DEF-SP-006
+       Actual:   has_csrf_field=False; tokenless cross-origin POSTs succeeded: /new=302, /edit=True, /toggle=True, /delete=True.
+       Evidence: evidence/security_execution_log.txt [TC-SEC-008]: csrf_field=False, new=302, edit=True, toggle=True, delete=True
+[FAIL] TC-SEC-009 | Tampering                          | Session Termination (GET /logout) | Defect: DEF-SP-006
+       Actual:   GET /logout returned HTTP 302 and cleared client session (subsequent /api/dashboard returned HTTP 401).
+       Evidence: evidence/security_execution_log.txt [TC-SEC-009]: Pre=200, GET /logout=302, Post=401
+[FAIL] TC-SEC-010 | Repudiation                        | Authentication & Task Mutation Audit Trail | Defect: DEF-SP-007
+       Actual:   AST confirms zero logging imports or app.logger calls in app.py; users table stores only (id, username, password_hash).
+       Evidence: evidence/security_execution_log.txt [TC-SEC-010]: ast_has_logging=False
+[FAIL] TC-SEC-011 | Information Disclosure             | Application Entry Point (app.py) | Defect: DEF-SP-008
+       Actual:   app.run(debug=True) hardcoded at line(s) [482] in app.py, exposing Werkzeug interactive debugger if launched directly.
+       Evidence: evidence/security_execution_log.txt [TC-SEC-011]: debug_true_lines=[482]
+[FAIL] TC-SEC-012 | Denial of Service / Information Disclosure | Task Date Validation (/api/tasks, /api/dashboard, /, /dashboard) | Defect: DEF-SP-009
+       Actual:   Status codes: {'POST /api/tasks': 500, 'GET /api/tasks': 500, 'GET /api/dashboard': 500, 'GET /': 500, 'GET /dashboard': 500}. Invalid date committed prior to ValueError crash, causing persistent HTTP 500 across all task/dashboard views.
+       Evidence: evidence/security_execution_log.txt [TC-SEC-012]: {'POST /api/tasks': 500, 'GET /api/tasks': 500, 'GET /api/dashboard': 500, 'GET /': 500, 'GET /dashboard': 500}
+[FAIL] TC-SEC-013 | Tampering / Elevation of Privilege | HTTP Response Headers & Session Cookie Attributes | Defect: DEF-SP-010
+       Actual:   Missing on /login: ['X-Content-Type-Options', 'X-Frame-Options', 'Content-Security-Policy', 'Cache-Control', 'Referrer-Policy']; missing on authenticated /: ['X-Content-Type-Options', 'X-Frame-Options', 'Content-Security-Policy', 'Cache-Control', 'Referrer-Policy']; Set-Cookie='session=<REDACTED_SIGNED_TOKEN>; HttpOnly; Path=/' (HttpOnly=True, SameSite=False, Secure=False).
+       Evidence: evidence/security_execution_log.txt [TC-SEC-013]: missing_authed=['X-Content-Type-Options', 'X-Frame-Options', 'Content-Security-Policy', 'Cache-Control', 'Referrer-Policy']; cookie_flags=(HttpOnly=True, SameSite=False, Secure=False)
+[PASS] TC-SEC-014 | Information Disclosure             | Categories Endpoint (GET /api/categories) | Defect: None
+       Actual:   HTTP 200 returned static categories [{'id': 2, 'name': 'Personal'}, {'id': 3, 'name': 'Study'}, {'id': 4, 'name': 'Urgent'}, {'id': 1, 'name': 'Work'}] (no PII exposed).
+       Evidence: evidence/security_execution_log.txt [TC-SEC-014]: HTTP 200 keys_only_id_name=True
+[FAIL] TC-SEC-015 | Denial of Service                  | Task List Pagination (GET /api/tasks) | Defect: DEF-SP-011
+       Actual:   per_page=-1 -> HTTP 200 (25 rows); page=-1 -> HTTP 200; per_page=100000 -> HTTP 200 (25 rows); page=10^18 -> HTTP 500.
+       Evidence: evidence/security_execution_log.txt [TC-SEC-015]: neg_pp=200(25), huge_pp=200(25), overflow=500
+[FAIL] TC-SEC-016 | Denial of Service                  | Task Payload Size Bounds (POST /api/tasks) | Defect: DEF-SP-012
+       Actual:   Accepted with HTTP 201; stored len(title)=50000, len(description)=50000.
+       Evidence: evidence/security_execution_log.txt [TC-SEC-016]: HTTP 201
+[FAIL] TC-SEC-017 | Elevation of Privilege             | Delete Task API (DELETE /api/tasks/<id>) | Defect: DEF-SP-013
+       Actual:   Attacker received HTTP 200 {"result":"ok"}; Owner's subsequent GET returned HTTP 404 (task deleted).
+       Evidence: evidence/security_execution_log.txt [TC-SEC-017]: attacker DELETE=200, owner GET=404
+[PASS] TC-SEC-018 | Elevation of Privilege             | API GET/PUT & Web UI /edit, /toggle, /delete Authorization | Defect: None
+       Actual:   API GET=404, PUT=404; Web edit(G/P)=(302,302), toggle=302, delete=302; Owner task intact=True.
+       Evidence: evidence/security_execution_log.txt [TC-SEC-018]: API=(404,404), intact=True
+[PASS] TC-SEC-019 | Elevation of Privilege             | Authentication Middleware (@login_required_web / _api) | Defect: None
+       Actual:   Web={'/': 302, '/dashboard': 302, '/tasks/new': 302, '/tasks/1/edit': 302, '/tasks/1/toggle': 302, '/tasks/1/delete': 302}; API={'GET /api/tasks': 401, 'POST /api/tasks': 401, 'GET /api/tasks/1': 401, 'PUT /api/tasks/1': 401, 'DELETE /api/tasks/1': 401, 'GET /api/dashboard': 401}.
+       Evidence: evidence/security_execution_log.txt [TC-SEC-019]: web_all_302=True, api_all_401=True
+[FAIL] TC-SEC-020 | Tampering                          | Relational Integrity (POST /api/tasks category_id) | Defect: DEF-SP-016
+       Actual:   Accepted with HTTP 201; stored orphan category_id=99999 (category=None).
+       Evidence: evidence/security_execution_log.txt [TC-SEC-020]: HTTP 201
+[FAIL] TC-SEC-021 | Denial of Service / Information Disclosure | REST API JSON Schema & Type Validation (/api/*) | Defect: DEF-SP-017
+       Actual:   Probe statuses={'register_list': 500, 'login_list': 500, 'login_int_user': 500, 'create_list': 500, 'create_int_title': 500, 'create_dict_desc': 500, 'create_int_due': 500, 'update_list': 500}; 8/8 payloads triggered unhandled HTTP 500 crashes (['register_list', 'login_list', 'login_int_user', 'create_list', 'create_int_title', 'create_dict_desc', 'create_int_due', 'update_list']).
+       Evidence: evidence/security_execution_log.txt [TC-SEC-021]: 500_count=8/8 {'register_list': 500, 'login_list': 500, 'login_int_user': 500, 'create_list': 500, 'create_int_title': 500, 'create_dict_desc': 500, 'create_int_due': 500, 'update_list': 500}
+[FAIL] TC-SEC-022 | Tampering / Denial of Service      | Task Update API (PUT /api/tasks/<id>) | Defect: DEF-SP-018
+       Actual:   PUT title=null -> HTTP 500 (IntegrityError); PUT title='   ' -> HTTP 200 (accepted blank title); PUT bad due_date -> HTTP 500.
+       Evidence: evidence/security_execution_log.txt [TC-SEC-022]: null=500, blank=200, baddate=500
+[FAIL] TC-SEC-023 | Tampering / Denial of Service      | Web UI Task Form Validation (/tasks/new -> /) | Defect: DEF-SP-009
+       Actual:   Empty-title POST returned HTTP 302 (accepted); invalid due_date POST returned HTTP 302 and broke GET / with HTTP 500.
+       Evidence: evidence/security_execution_log.txt [TC-SEC-023]: empty_title=302, bad_date=302, GET /=500
+[PASS] TC-SEC-024 | Tampering                          | Web UI Task Search (GET /?q=) | Defect: None
+       Actual:   Web UI returned HTTP 200; leaked_user_b=False (parameterized LIKE ? protected Web UI).
+       Evidence: evidence/security_execution_log.txt [TC-SEC-024]: HTTP 200, leaked_user_b=False
+[FAIL] TC-SEC-025 | Spoofing                           | Session Revocation Lifecycle (GET /logout) | Defect: DEF-SP-019
+       Actual:   Replayed pre-logout cookie still authenticated to GET /api/dashboard with HTTP 200 (stateless cookie lacks server-side revocation).
+       Evidence: evidence/security_execution_log.txt [TC-SEC-025]: post-logout cookie replay HTTP 200
+[FAIL] TC-SEC-026 | Spoofing / Denial of Service       | Password Strength Policy & Request Size Limit (helpers.py, app.py) | Defect: DEF-SP-020
+       Actual:   8-char valid=False (corroborates Week 1 DEF-001 / Week 2 DEF-WB-001); whitespace-only 9-space password accepted=True (HTTP 201); MAX_CONTENT_LENGTH=None.
+       Evidence: evidence/security_execution_log.txt [TC-SEC-026]: 8char=False, ws_accepted=True, max_content_len=None
