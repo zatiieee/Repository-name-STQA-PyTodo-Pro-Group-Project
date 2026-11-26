@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="8" skipped="0" tests="30" time="39.517" timestamp="2026-11-27T00:39:04.545543+08:00" hostname="Syarafuddin"><testcase classname="test_api_regression" name="test_reg_015_unauthenticated_access_blocked" time="0.917" /><testcase classname="test_api_regression" name="test_reg_016_api_crud_lifecycle_and_ui_parity" time="0.827" /><testcase classname="test_api_regression" name="test_reg_017_api_categories_and_dashboard" time="0.296" /><testcase classname="test_api_regression" name="test_reg_019_duplicate_username_rejected_guard" time="0.414"><failure message="AssertionError: DEF-SP-001/DEF-API-003 still open: duplicate register returned 201&#10;assert 201 in (400, 409)&#10; +  where 201 = &lt;Response [201]&gt;.status_code">live_server_url = 'http://127.0.0.1:49619'
+
+    @pytest.mark.api
+    @pytest.mark.known_bug
+    def test_reg_019_duplicate_username_rejected_guard(live_server_url):
+        """TC-REG-019 (maps INV-05/DEF-API-003/DEF-SP-001): Duplicate username registration must return 400 or 409."""
+        dup_name = unique_user("dupreg")
+        _, r1 = api_register_session(live_server_url, dup_name, "ValidPass123")
+        _, r2 = api_register_session(live_server_url, dup_name, "OtherPass999")
+        assert r1.status_code == 201
+&gt;       assert r2.status_code in (400, 409), f"DEF-SP-001/DEF-API-003 still open: duplicate register returned {r2.status_code}"
+E       AssertionError: DEF-SP-001/DEF-API-003 still open: duplicate register returned 201
+E       assert 201 in (400, 409)
+E        +  where 201 = &lt;Response [201]&gt;.status_code
+
+test_api_regression.py:109: AssertionError</failure></testcase><testcase classname="test_api_regression" name="test_reg_020_invalid_due_date_rejected_guard" time="0.231"><failure message="AssertionError: DEF-SP-009/DEF-API-001 still open: bad due_date returned HTTP 500&#10;assert 500 == 400&#10; +  where 500 = &lt;Response [500]&gt;.status_code">live_server_url = 'http://127.0.0.1:49619'
+
+    @pytest.mark.api
+    @pytest.mark.known_bug
+    def test_reg_020_invalid_due_date_rejected_guard(live_server_url):
+        """TC-REG-020 (maps INV-02/DEF-API-001/DEF-SP-009): Malformed due_date must return HTTP 400 without 500."""
+        sess, _ = api_register_session(live_server_url, unique_user("baddate"), "ValidPass123")
+        resp = sess.post(
+            f"{live_server_url}/api/tasks",
+            json={"title": "Bad Date Guard", "due_date": "2026-02-30"},
+            timeout=5,
+        )
+&gt;       assert resp.status_code == 400, f"DEF-SP-009/DEF-API-001 still open: bad due_date returned HTTP {resp.status_code}"
+E       AssertionError: DEF-SP-009/DEF-API-001 still open: bad due_date returned HTTP 500
+E       assert 500 == 400
+E        +  where 500 = &lt;Response [500]&gt;.status_code
+
+test_api_regression.py:122: AssertionError</failure></testcase><testcase classname="test_api_regression" name="test_reg_021_api_search_sqli_guard" time="0.458"><failure message="AssertionError: DEF-SP-004 still open: SQLi leaked cross-user task ['B Private Task']&#10;assert 'B Private Task' not in ['B Private Task']">live_server_url = 'http://127.0.0.1:49619'
+
+    @pytest.mark.api
+    @pytest.mark.known_bug
+    def test_reg_021_api_search_sqli_guard(live_server_url):
+        """TC-REG-021 (maps TC-SEC-005/DEF-SP-004): SQLi in GET /api/tasks?q= must not leak User B tasks."""
+        ua, _ = api_register_session(live_server_url, unique_user("sqlia"), "ValidPass123")
+        ub, _ = api_register_session(live_server_url, unique_user("sqlib"), "ValidPass123")
+        ua.post(f"{live_server_url}/api/tasks", json={"title": "A Safe Task"}, timeout=5)
+        ub.post(f"{live_server_url}/api/tasks", json={"title": "B Private Task"}, timeout=5)
+    
+        resp = ua.get(f"{live_server_url}/api/tasks", params={"q": "x%' OR title = 'B Private Task' OR 'a' = 'b"}, timeout=5)
+        assert resp.status_code == 200, f"Unexpected HTTP {resp.status_code} on SQLi check"
+        titles = [t["title"] for t in resp.json()]
+&gt;       assert "B Private Task" not in titles, f"DEF-SP-004 still open: SQLi leaked cross-user task {titles}"
+E       AssertionError: DEF-SP-004 still open: SQLi leaked cross-user task ['B Private Task']
+E       assert 'B Private Task' not in ['B Private Task']
+
+test_api_regression.py:137: AssertionError</failure></testcase><testcase classname="test_api_regression" name="test_reg_022_api_delete_idor_guard" time="0.440"><failure message="AssertionError: DEF-SP-013 still open: cross-user DELETE returned 200&#10;assert 200 in (403, 404)&#10; +  where 200 = &lt;Response [200]&gt;.status_code">live_server_url = 'http://127.0.0.1:49619'
+
+    @pytest.mark.api
+    @pytest.mark.known_bug
+    def test_reg_022_api_delete_idor_guard(live_server_url):
+        """TC-REG-022 (maps TC-SEC-017/DEF-SP-013): User B cannot DELETE User A's task; GET/PUT stay isolated."""
+        ua, _ = api_register_session(live_server_url, unique_user("idorown"), "ValidPass123")
+        ub, _ = api_register_session(live_server_url, unique_user("idoratt"), "ValidPass123")
+        tid = ua.post(f"{live_server_url}/api/tasks", json={"title": "Owner Task"}, timeout=5).json()["id"]
+    
+        # Positive control: GET and PUT blocked
+        assert ub.get(f"{live_server_url}/api/tasks/{tid}", timeout=5).status_code == 404
+        assert ub.put(f"{live_server_url}/api/tasks/{tid}", json={"title": "Hijacked"}, timeout=5).status_code == 404
+    
+        del_resp = ub.delete(f"{live_server_url}/api/tasks/{tid}", timeout=5)
+&gt;       assert del_resp.status_code in (403, 404), f"DEF-SP-013 still open: cross-user DELETE returned {del_resp.status_code}"
+E       AssertionError: DEF-SP-013 still open: cross-user DELETE returned 200
+E       assert 200 in (403, 404)
+E        +  where 200 = &lt;Response [200]&gt;.status_code
+
+test_api_regression.py:153: AssertionError</failure></testcase><testcase classname="test_selenium_ui_regression" name="test_reg_001_valid_registration_redirects_to_tasks" time="2.538" /><testcase classname="test_selenium_ui_regression" name="test_reg_002_blank_and_invalid_username_rejected[   ]" time="0.430" /><testcase classname="test_selenium_ui_regression" name="test_reg_002_blank_and_invalid_username_rejected[user@1]" time="0.435" /><testcase classname="test_selenium_ui_regression" name="test_reg_002_blank_and_invalid_username_rejected[a b]" time="0.443" /><testcase classname="test_selenium_ui_regression" name="test_reg_002_blank_and_invalid_username_rejected[bad!name]" time="0.444" /><testcase classname="test_selenium_ui_regression" name="test_reg_003_username_length_boundaries[2-False]" time="0.440" /><testcase classname="test_selenium_ui_regression" name="test_reg_003_username_length_boundaries[3-True]" time="0.673" /><testcase classname="test_selenium_ui_regression" name="test_reg_003_username_length_boundaries[4-True]" time="0.620" /><testcase classname="test_selenium_ui_regression" name="test_reg_003_username_length_boundaries[19-True]" time="0.670" /><testcase classname="test_selenium_ui_regression" name="test_reg_003_username_length_boundaries[20-True]" time="0.718" /><testcase classname="test_selenium_ui_regression" name="test_reg_003_username_length_boundaries[21-False]" time="0.916" /><testcase classname="test_selenium_ui_regression" name="test_reg_004_password_below_and_above_min_boundaries" time="1.430" /><testcase classname="test_selenium_ui_regression" name="test_reg_005_password_exact_8_chars_boundary" time="0.458"><failure message="AssertionError: DEF-001/DEF-WB-001 still open: 8-char password 'Pass1234' rejected on /register&#10;assert 'http://127.0...9619/register' == 'http://127.0.0.1:49619'&#10;  &#10;  - http://127.0.0.1:49619&#10;  + http://127.0.0.1:49619/register&#10;  ?                       +++++++++">browser = &lt;selenium.webdriver.chrome.webdriver.WebDriver (session="a0efea43f6f0a3857ad98055069ad0c0")&gt;
+live_server_url = 'http://127.0.0.1:49619'
+
+    @pytest.mark.ui
+    @pytest.mark.known_bug
+    def test_reg_005_password_exact_8_chars_boundary(browser, live_server_url):
+        """TC-REG-005 (maps TC-BB-012, WB-002 / DEF-001, DEF-WB-001): 8-char password minimum must pass."""
+        auth = AuthPage(browser, live_server_url)
+        auth.register(unique_user("pw8"), "Pass1234")
+&gt;       assert browser.current_url.rstrip("/") == live_server_url.rstrip("/"), (
+            "DEF-001/DEF-WB-001 still open: 8-char password 'Pass1234' rejected on /register"
+        )
+E       AssertionError: DEF-001/DEF-WB-001 still open: 8-char password 'Pass1234' rejected on /register
+E       assert 'http://127.0...9619/register' == 'http://127.0.0.1:49619'
+E         
+E         - http://127.0.0.1:49619
+E         + http://127.0.0.1:49619/register
+E         ?                       +++++++++
+
+test_selenium_ui_regression.py:82: AssertionError</failure></testcase><testcase classname="test_selenium_ui_regression" name="test_reg_006_login_decision_table_and_logout" time="2.905" /><testcase classname="test_selenium_ui_regression" name="test_reg_007_create_edit_and_cancel_task_ui" time="2.266" /><testcase classname="test_selenium_ui_regression" name="test_reg_008_filter_by_category_status_and_search" time="3.083" /><testcase classname="test_selenium_ui_regression" name="test_reg_009_task_state_transition_open_done_open" time="1.579" /><testcase classname="test_selenium_ui_regression" name="test_reg_010_delete_task_confirm_accept_and_dismiss" time="1.482" /><testcase classname="test_selenium_ui_regression" name="test_reg_011_dashboard_counters_and_screenshots" time="2.728" /><testcase classname="test_selenium_ui_regression" name="test_reg_012_urgency_classification_boundaries" time="3.142" /><testcase classname="test_selenium_ui_regression" name="test_reg_013_urgency_due_today_regression_guard" time="1.628"><failure message="AssertionError: DEF-002/DEF-WB-002 still open: due today rendered as 'Overdue'&#10;assert 'Overdue' == 'Due Today'&#10;  &#10;  - Due Today&#10;  + Overdue">browser = &lt;selenium.webdriver.chrome.webdriver.WebDriver (session="a0efea43f6f0a3857ad98055069ad0c0")&gt;
+live_server_url = 'http://127.0.0.1:49619'
+
+    @pytest.mark.ui
+    @pytest.mark.known_bug
+    def test_reg_013_urgency_due_today_regression_guard(browser, live_server_url):
+        """TC-REG-013 (maps TC-BB-021, WB-006 / DEF-002, DEF-WB-002): Due today must display 'Due Today'."""
+        AuthPage(browser, live_server_url).register(unique_user("todayui"), "ValidPass123")
+        form = TaskFormPage(browser, live_server_url)
+        tasks = TasksPage(browser, live_server_url)
+        form.create_task("Today Task", category_text="Urgent", due_yyyy_mm_dd=date.today().strftime("%Y-%m-%d"))
+        badge = tasks.badge_for("Today Task")
+&gt;       assert badge == "Due Today", f"DEF-002/DEF-WB-002 still open: due today rendered as '{badge}'"
+E       AssertionError: DEF-002/DEF-WB-002 still open: due today rendered as 'Overdue'
+E       assert 'Overdue' == 'Due Today'
+E         
+E         - Due Today
+E         + Overdue
+
+test_selenium_ui_regression.py:259: AssertionError</failure></testcase><testcase classname="test_selenium_ui_regression" name="test_reg_014_stored_xss_dom_escaping_guard" time="3.409"><failure message="AssertionError: DEF-SP-005 still open: |safe in index.html rendered unescaped HTML element in DOM&#10;assert 1 == 0&#10; +  where 1 = len([&lt;selenium.webdriver.remote.webelement.WebElement (session=&quot;a0efea43f6f0a3857ad98055069ad0c0&quot;, element=&quot;f.C2475C4AC382934AB22CA2E58C1F4BCF.d.00EBF43E45349B3958E87101DA41193A.e.1334&quot;)&gt;])">browser = &lt;selenium.webdriver.chrome.webdriver.WebDriver (session="a0efea43f6f0a3857ad98055069ad0c0")&gt;
+live_server_url = 'http://127.0.0.1:49619'
+
+    @pytest.mark.ui
+    @pytest.mark.known_bug
+    def test_reg_014_stored_xss_dom_escaping_guard(browser, live_server_url):
+        """TC-REG-014 (maps TC-SEC-006 / DEF-SP-005): Task title HTML tags must not render live DOM nodes."""
+        AuthPage(browser, live_server_url).register(unique_user("xssui"), "ValidPass123")
+        TaskFormPage(browser, live_server_url).create_task("&lt;span id='stqa-xss-injected'&gt;XSS&lt;/span&gt;", category_text="Work")
+        injected = browser.find_elements(By.ID, "stqa-xss-injected")
+&gt;       assert len(injected) == 0, "DEF-SP-005 still open: |safe in index.html rendered unescaped HTML element in DOM"
+E       AssertionError: DEF-SP-005 still open: |safe in index.html rendered unescaped HTML element in DOM
+E       assert 1 == 0
+E        +  where 1 = len([&lt;selenium.webdriver.remote.webelement.WebElement (session="a0efea43f6f0a3857ad98055069ad0c0", element="f.C2475C4AC382934AB22CA2E58C1F4BCF.d.00EBF43E45349B3958E87101DA41193A.e.1334")&gt;])
+
+test_selenium_ui_regression.py:269: AssertionError</failure></testcase><testcase classname="test_unit_regression" name="test_reg_018_exact_seven_day_completion_regression_guard" time="0.012"><failure message="AssertionError: DEF-WB-003 still open: completed_in_last_n_days uses '&lt; n' instead of '&lt;= n'&#10;assert False is True&#10; +  where False = &lt;function completed_in_last_n_days at 0x0000028473513A00&gt;('2026-11-20 12:00:00', n=7, now=datetime.datetime(2026, 11, 27, 12, 0))&#10; +    where &lt;function completed_in_last_n_days at 0x0000028473513A00&gt; = helpers.completed_in_last_n_days">@pytest.mark.unit
+    @pytest.mark.known_bug
+    def test_reg_018_exact_seven_day_completion_regression_guard():
+        """TC-REG-018 (maps WB-017 / DEF-WB-003): Exact 7-day completion and same-second boundary must count."""
+        now = datetime(2026, 11, 27, 12, 0, 0)
+        seven_days_ago = (now - timedelta(days=7)).strftime("%Y-%m-%d %H:%M:%S")
+&gt;       assert helpers.completed_in_last_n_days(seven_days_ago, n=7, now=now) is True, (
+            "DEF-WB-003 still open: completed_in_last_n_days uses '&lt; n' instead of '&lt;= n'"
+        )
+E       AssertionError: DEF-WB-003 still open: completed_in_last_n_days uses '&lt; n' instead of '&lt;= n'
+E       assert False is True
+E        +  where False = &lt;function completed_in_last_n_days at 0x0000028473513A00&gt;('2026-11-20 12:00:00', n=7, now=datetime.datetime(2026, 11, 27, 12, 0))
+E        +    where &lt;function completed_in_last_n_days at 0x0000028473513A00&gt; = helpers.completed_in_last_n_days
+
+test_unit_regression.py:24: AssertionError</failure></testcase></testsuite></testsuites>
